@@ -9,7 +9,7 @@
  * @author    AlloVince
  */
 
-use EvaFileParser;
+namespace EvaFileParser;
 
 class Event
 {

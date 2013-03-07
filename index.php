@@ -24,7 +24,7 @@ $localConfig = $dir . '/config.local.php';
 if (file_exists($autoloader)) {
     $loader = include $autoloader;
 } else {
-    //die('Dependent library not found, run "composer install" first.');
+    die('Dependent library not found, run "composer install" first.');
 }
 
 /** Debug functions */
@@ -35,6 +35,17 @@ function p($r, $usePr = false)
 
 $loader->add('EvaFileParser', $dir . '/src');
 
+use EvaFileParser\Parser;
+use EvaFileParser\Event;
 
-$parser = new EvaFileParser\Parser(__DIR__ . '/data/dict.txt');
+Event::listen(Parser::EVENT_FILE_OPEN, function($parser){
+    //p($parser->getFile()->getSize());
+});
+
+Event::listen(Parser::EVENT_PARSE, function($parser){
+    //p($parser->getContent());
+});
+
+$parser = new Parser(__DIR__ . '/data/dict.txt');
+$parser->setMaxLine(50);
 $parser->run();
