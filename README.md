@@ -33,3 +33,22 @@ Support Events:
 - Parser::EVENT_AFTER_PARSE trigger after parse finished on each parse process
 - Parser::EVENT_PARSE trigger each parse process
 - Parser::EVENT_PARSE_LINE trigger when reading current line
+
+
+Performance:
+
+Parse a 99KB txt file, 1250 lines, 5000 lines once max:
+
+    Mem usage : 215.38 kb
+    Run Time :268.4ms
+
+ 
+Parse a 13,163KB txt file, 304,003 lines, 5000 lines once max:
+
+    Mem usage : 283.98 kb
+	Run Time :25393ms
+
+Old version:
+
+    Mem usage : 99.47 kb
+	Run Time :996.6ms
