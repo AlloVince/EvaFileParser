@@ -23,8 +23,10 @@ $timeStart = microtime(true);
 $dir = __DIR__;
 $autoloader = $dir . '/vendor/autoload.php';
 $listener = $dir . '/listeners/text.php';
-$datafile = $dir. '/data/dict.txt';
+$datafile = $dir. '/data/data.txt';
 $output = $dir . '/data/output.txt';
+$maxLine = 5000;
+$debug = 1;
 
 if (file_exists($autoloader)) {
     $loader = include $autoloader;
@@ -41,6 +43,7 @@ function p($r, $usePr = false)
 $loader->add('EvaFileParser', $dir . '/src');
 
 use EvaFileParser\Parser;
+use EvaFileParser\Debuger;
 
 if (file_exists($listener)) {
     include $listener;
@@ -49,7 +52,7 @@ if (file_exists($listener)) {
 }
 
 $parser = new Parser($datafile, $output);
-$parser->setMaxLine(500);
+$parser->setMaxLine($maxLine);
 $parser->run();
 
 
@@ -62,6 +65,7 @@ function convert($size)
 $memEnd = memory_get_usage();
 $timeEnd = microtime(true);
 
-echo printf('Mem usage %s', convert($memEnd - $memStart));
-echo "\n";
-echo printf('Time %s ms', round(($timeEnd - $timeStart) * 1000, 1));
+if($debug){
+    Debuger::log('Mem usage : ' . convert($memEnd - $memStart));
+    Debuger::log('Run Time :' . round(($timeEnd - $timeStart) * 1000, 1) . 'ms');
+}

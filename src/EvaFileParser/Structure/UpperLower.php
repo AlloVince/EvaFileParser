@@ -18,6 +18,8 @@ class UpperLower
 {
     private static $saves = array();
 
+    private static $res;
+
     public static function saveVar($varName, $value)
     {
         self::$saves[$varName] = $value;
@@ -31,8 +33,17 @@ class UpperLower
         return null;
     }
 
+    public static function getRes()
+    {
+        return self::$res;
+    }
+
     public static function writeTo($filePath, $content, $mode = "w")
     {
+        if(!$filePath){
+            return false;
+        }
+
         if (!$handle = fopen($filePath, $mode)) {
             throw new Exception\IOException(sprintf('File %s open failed', $filePath));
         }
@@ -63,12 +74,44 @@ class UpperLower
         //-4 because maybe content \n
         $content = $lastContent ? substr($lastContent, -4) . $content : $content;
 
-        $res = self::parse($content);
+        self::$res = $res = self::parse($content);
         if($res){
             self::writeTo($parser->getOutput(), $res, 'a');
         }
     }
 
+    public static function parse($text)
+    {
+        $count = strlen($text);
+        $fakeText = '';
+        $newText = '';
+        $i = 0;
+        for($i; $i < $count; $i++){
+            $cha = $text{$i};
+            $letter = ord($cha);
+            if($letter > 64 && $letter < 91){
+                $fakeText .= '1';
+                $newText .= $cha;
+            } elseif($letter > 96 && $letter < 123){
+                $fakeText .= '0';
+                $newText .= $cha;
+            }
+        }
+
+        //边界条件
+        $fakeText = '0' . $fakeText . '0';
+
+        $pos = 0;
+        $res = '';
+        while(false !== ( $pos = stripos($fakeText, '011101110', $pos) )){
+            $pos += 3;
+            $res .= $newText{$pos};
+        } 
+        return $res;
+    }
+
+
+    /*
     protected static function parse($text)
     {
         $textArray = str_split($text);
@@ -102,4 +145,5 @@ class UpperLower
         } 
         return $res;
     }
+    */
 }

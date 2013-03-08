@@ -227,6 +227,12 @@ class Parser
         return $this->content;
     }
 
+    public function setContent($content)
+    {
+        $this->content = $content;
+        return $this;
+    }
+
     public function getLine()
     {
         return $this->line;
@@ -269,10 +275,12 @@ class Parser
         Event::trigger(self::EVENT_AFTER_PARSE, $this);
     }
 
+    /*
     public function split()
     {
         //split by: fixed lines | some text feature mark
     }
+    */
 
     protected function parseByLine()
     {
@@ -329,9 +337,4 @@ class Parser
         }
     }
 
-    public function __destruct()
-    {
-        //Unlock file whatever
-        $this->unlockFile();
-    }
 }
