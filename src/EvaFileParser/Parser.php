@@ -227,6 +227,11 @@ class Parser
         return $this->content;
     }
 
+    public function getLine()
+    {
+        return $this->line;
+    }
+
     public function openFile($filePath = null)
     {
         if($filePath){
@@ -264,6 +269,11 @@ class Parser
         Event::trigger(self::EVENT_AFTER_PARSE, $this);
     }
 
+    public function split()
+    {
+        //split by: fixed lines | some text feature mark
+    }
+
     protected function parseByLine()
     {
         $startLine = $this->getStartLine() - 1;
@@ -272,8 +282,18 @@ class Parser
     
         $file->seek($startLine);
         $content = '';
-        for($i = 0; $i < $maxLine; $i++) {
-            $this->line = $content .= $file->current();
+        $endLine = $startLine + $maxLine;
+        for($i = $startLine; $i < $endLine; $i++) {
+            $line = $file->current();
+
+            //out of range will return false
+            if(false === $line){
+                break;
+            }
+
+            $this->line = $line;
+            $this->currentLine = $i + 1;
+            $content .= $line;
             Event::trigger(self::EVENT_PARSE_LINE, $this);
             $file->next();
         }
@@ -291,7 +311,11 @@ class Parser
     public function run()
     {
         $file = $this->openFile();
-        $this->parse();
+
+        while(!$this->reachEnd()){
+            $this->parse();
+            $this->setStartLine($this->getCurrentLine() + 1);
+        }
     }
 
     public function __construct($filePath = null, $output = null)
