@@ -72,7 +72,7 @@ class UpperLower
         self::saveVar('lastContent', $content);
 
         //-4 because maybe content \n
-        $content = $lastContent ? substr($lastContent, -4) . $content : $content;
+        //$content = $lastContent ? substr($lastContent, -4) . $content : $content;
 
         self::$res = $res = self::parse($content);
         if($res){
@@ -80,6 +80,44 @@ class UpperLower
         }
     }
 
+    public static function parse($text)
+    {
+        $text = explode("\n", $text);
+        $states = array(
+            -1 => array(-1, 0),
+            0 => array(1, 0),
+            1 => array(2, 0),
+            2 => array(3, 0),
+            3 => array(-1, 4),
+            4 => array(5, 0), 
+            5 => array(6, 0), 
+            6 => array(7, 0),
+            7 => array(-1, 4),
+        );
+        $state = 0;
+        $res = '';
+        foreach($text as $l){
+            $count = strlen($l);
+            $i = 0;
+            for($i; $i < $count; $i++){
+                $cha = $l{$i};
+                $letter = ord($cha);
+                $isLower = 0;
+                if($letter > 96 && $letter < 123){
+                    $isLower = 1;
+                }
+                $nextState = $states[$state][$isLower];
+                if($nextState === 4 && $state === 7){
+                    $res .= $l{$i - 4};
+                }
+                $state = $nextState;
+            }
+        }
+
+        return $res;
+    }
+
+    /*
     public static function parse($text)
     {
         $count = strlen($text);
@@ -109,6 +147,7 @@ class UpperLower
         } 
         return $res;
     }
+    */
 
 
     /*
